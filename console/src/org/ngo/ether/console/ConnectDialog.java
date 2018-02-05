@@ -54,9 +54,9 @@ public class ConnectDialog extends JDialog {
     public ConnectDialog(Frame owner) throws HeadlessException {
         super(owner, "Connect", true);
 
-        serverAddress = "192.168.0.5:60001";
         port = "";
-
+        serverAddress = System.getProperty("ngo.bridge.host","127.0.0.1") + ":" + System.getProperty("ngo.bridge.port","60001");;
+        
         final JTextField serverAddressField = new JTextField(serverAddress);
         final JTextField usernameField = new JTextField(port);
         final JCheckBox useSslCheckBox = new JCheckBox("Use SSL", false);

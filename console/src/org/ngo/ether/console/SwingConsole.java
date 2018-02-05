@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 
@@ -77,19 +78,25 @@ public class SwingConsole extends JFrame implements EndpointCallback {
         super("Console Client based on Apache MINA");
         loginButton = new JButton(new ConnectAction());
         loginButton.setText("Connect");
+        
         quitButton = new JButton(new DisconnectAction());
         quitButton.setText("Disconnect");
+        
         closeButton = new JButton(new QuitAction());
         closeButton.setText("Quit");
+        
         inputText = new JTextField(30);
         inputText.setAction(new SendMessageAction());
+        inputText.setEnabled(false);
+        
         area = new JTextArea(10, 50);
         area.setLineWrap(true);
         area.setEditable(false);
         scroll = new JScrollBar();
         scroll.add(area);
+        
         portField = new JTextField(10);
-        portField.setEditable(true);
+        portField.setEnabled(false);
         serverField = new JTextField(10);
         serverField.setEditable(false);
 
@@ -246,22 +253,45 @@ public class SwingConsole extends JFrame implements EndpointCallback {
     
     private void setconnected() {
     	inputText.setEnabled(true);
-    	portField.setEnabled(true);;
+    	portField.setEnabled(true);
         quitButton.setEnabled(true);
         loginButton.setEnabled(false);
+        System.out.println("ASYNC invoke ..." + javax.swing.SwingUtilities.isEventDispatchThread());; 
+        //this.repaint();
     }
 
     public void connected() {
     	area.setText("");
-        append("You have Connected to the bridge.\n");
-        setconnected();
+        append("You have Connected to the bridge async 2.\n");
+        
+        //HXY: make sure current thread is Event dispatch thread 
+        // http://docs.oracle.com/javase/tutorial/uiswing/concurrency/initial.html
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	setconnected();
+            }
+        });
+            
     }
 
-    public void disconnected() {
-        append("Connection closed.\n");
-        inputText.setEnabled(false);
+    private void setDisconnected()
+    {
+    	inputText.setEnabled(false);
+    	portField.setEnabled(false);
         quitButton.setEnabled(false);
         loginButton.setEnabled(true);
+        //is below necessary?
+        //this.repaint();
+    }
+    
+    public void disconnected() {
+        append("Connection closed.\n");
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	setDisconnected();
+            }
+        });
     }
 
     public void error(String message) {

@@ -1,3 +1,13 @@
-.settings/org.eclipse.jdt.core.prefs
+.settings/
+bin/
 .project
 .classpath
+/.metadata
+/.recommenders
+/asm
+/embded
+/codec
+/mina
+/RemoteSystemsTempFiles
+
+*.class

@@ -21,7 +21,7 @@ public class BridgeHandler extends IoHandlerAdapter {
 	private final static Logger LOGGER = LoggerFactory.getLogger(BridgeHandler.class);
 
 	
-	private static final Map<Short, List<IoSession>> DNS = new ConcurrentHashMap<Short,List<IoSession>>();
+	private static final Map<Short, SessionGroup<IoSession>> DNS = new ConcurrentHashMap<Short, SessionGroup<IoSession>>();
 	
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
@@ -34,7 +34,7 @@ public class BridgeHandler extends IoHandlerAdapter {
 		Short port = (Short) session.getAttribute(Constants.ATTR_PORT);
 		synchronized(DNS)
 		{
-			List<IoSession> connections = DNS.get(port);
+			SessionGroup<IoSession> connections = DNS.get(port);
 			connections.remove(session);
 		}
 	}
@@ -79,10 +79,10 @@ public class BridgeHandler extends IoHandlerAdapter {
 			short port = epack.getDestination();
 			synchronized(DNS)
 			{
-				List<IoSession> connections = DNS.get(port);
+				SessionGroup<IoSession> connections = DNS.get(port);
 				if (connections == null)
 				{
-					connections = new LinkedList<IoSession>();
+					connections = new SessionGroup<IoSession>();
 					DNS.put(port, connections);
 				}
 				
@@ -114,9 +114,9 @@ public class BridgeHandler extends IoHandlerAdapter {
 		{
 			//do data forwarding
 			short port = epack.getDestination();
-			//XHO? really need to do synchronize here?
+			//XHO? really need to do synchronize here? 
 			synchronized (DNS) {
-				List<IoSession> connections = DNS.get(port);
+				SessionGroup<IoSession> connections = DNS.get(port);
 				if (connections != null)
 		            for (IoSession s : connections) {
 		                if (s.isConnected()) {

@@ -65,8 +65,9 @@ public class Bridge {
         acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idle);
         
         int port = Integer.valueOf(System.getProperty("ngo.bridge.port","60001"));
+        String host = System.getProperty("ngo.bridge.host","127.0.0.1");
         try {
-			acceptor.bind(new InetSocketAddress("192.168.0.5",port));
+			acceptor.bind(new InetSocketAddress(host,port));
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());
 		}    
