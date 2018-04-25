@@ -45,7 +45,7 @@ public class ConnectDialog extends JDialog {
 
     private String serverAddress;
 
-    private String port;
+    private String srcPort;
 
     private boolean useSsl;
 
@@ -54,11 +54,11 @@ public class ConnectDialog extends JDialog {
     public ConnectDialog(Frame owner) throws HeadlessException {
         super(owner, "Connect", true);
 
-        port = "";
+        srcPort = "-1";
         serverAddress = System.getProperty("ngo.bridge.host","127.0.0.1") + ":" + System.getProperty("ngo.bridge.port","60001");;
         
         final JTextField serverAddressField = new JTextField(serverAddress);
-        final JTextField usernameField = new JTextField(port);
+        final JTextField srcPortField = new JTextField(srcPort);
         final JCheckBox useSslCheckBox = new JCheckBox("Use SSL", false);
 
         JPanel content = new JPanel();
@@ -66,7 +66,7 @@ public class ConnectDialog extends JDialog {
         content.add(new JLabel("Server address"));
         content.add(serverAddressField);
         content.add(new JLabel("port"));
-        content.add(usernameField);
+        content.add(srcPortField);
         content.add(useSslCheckBox);
 
         JButton okButton = new JButton();
@@ -75,7 +75,7 @@ public class ConnectDialog extends JDialog {
 
             public void actionPerformed(ActionEvent e) {
                 serverAddress = serverAddressField.getText();
-                port = usernameField.getText();
+                srcPort = srcPortField.getText();
                 useSsl = useSslCheckBox.isSelected();
                 ConnectDialog.this.dispose();
             }
@@ -107,8 +107,8 @@ public class ConnectDialog extends JDialog {
         return serverAddress;
     }
 
-    public String getPort() {
-        return port;
+    public String getSrcPort() {
+        return srcPort;
     }
 
     public boolean isUseSsl() {

@@ -73,9 +73,16 @@ public class SwingConsole extends JFrame implements EndpointCallback {
     private EndpointSupport client;
 
     private EndpointHandler handler;
+    
+    private int srcPort = -1;
+    
+    //this is a unique ID in aether system.
+    // SwingConsole.ID = 12
+    // Pad.ID = 8;
+    public static final int ID = 12; 
 
     public SwingConsole() {
-        super("Console Client based on Apache MINA");
+        super("Console Client based on Apache MINA - v1.1");
         loginButton = new JButton(new ConnectAction());
         loginButton.setText("Connect");
         
@@ -167,12 +174,13 @@ public class SwingConsole extends JFrame implements EndpointCallback {
             }
 
             SocketAddress address = parseSocketAddress(dialog.getServerAddress());
-            int port = parsePort(dialog.getPort());
+            srcPort = parsePort(dialog.getSrcPort());
+            srcPort = srcPort==-1 ? SwingConsole.ID : srcPort;
 
-    		handler= new EndpointHandler(SwingConsole.this, (short)port);
+    		handler= new EndpointHandler(SwingConsole.this, (short)srcPort);
     		client = new EndpointSupport("Console", handler);
     	                
-    		serverField.setText(dialog.getServerAddress() + "/"+ dialog.getPort());
+    		serverField.setText(dialog.getServerAddress() + "/"+ dialog.getSrcPort());
             
             if (!client.connect(address, dialog.isUseSsl())) {
                 JOptionPane.showMessageDialog(SwingConsole.this,
@@ -187,7 +195,7 @@ public class SwingConsole extends JFrame implements EndpointCallback {
 
         public void actionPerformed(ActionEvent e) {
             try {
-                client.sendMessage(inputText.getText(), parsePort(portField.getText()));
+                client.sendMessage(inputText.getText(), srcPort , parsePort(portField.getText()));
                 inputText.setText("");
             } catch (Exception e1) {
                 JOptionPane.showMessageDialog(SwingConsole.this,
