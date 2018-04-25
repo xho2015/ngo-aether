@@ -95,7 +95,7 @@ public class EtherPack {
 	
 	public String toString()
 	{
-		return String.format("EtherPack[type=%s, dest=%x]", PackType.toString(type), this.destination);
+		return String.format("EtherPack[type=%s, src=%d, dest=%d]", PackType.toString(type), this.source, this.destination);
 	}
 	
 }

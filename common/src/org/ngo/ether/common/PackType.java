@@ -47,30 +47,34 @@ public class PackType {
 		throw new IllegalArgumentException("Unrecognized ether package type: " + value);
 	}
 
-	public Object toPack(Object...value) {
+	public Object toPack(int from, int to) {
 		if (this == REG) {
 			EtherPack reg = new EtherPack();
-			reg.setDestination((Short)value[0]);
+			reg.setSource((short)from);
+			reg.setDestination((short)to);
 			reg.setType(REG.value());
 			return reg;
 		}
 		else if (this == REGA) {
 			EtherPack rega = new EtherPack();
-			rega.setDestination((Short)value[0]);
+			rega.setSource((short)from);
+			rega.setDestination((short)to);
 			rega.setType(REGA.value());
 			return rega;
 		}
 		else if (this == KA) {
-			EtherPack reg = new EtherPack();
-			reg.setDestination((Short)value[0]);
-			reg.setType(KA.value());
-			return reg;
+			EtherPack ka = new EtherPack();
+			ka.setSource((short)from);
+			ka.setDestination((short)to);
+			ka.setType(KA.value());
+			return ka;
 		}
 		else if (this == KAA) {
-			EtherPack reg = new EtherPack();
-			reg.setDestination((Short)value[0]);
-			reg.setType(KAA.value());
-			return reg;
+			EtherPack kaa = new EtherPack();
+			kaa.setSource((short)from);
+			kaa.setDestination((short)to);
+			kaa.setType(KAA.value());
+			return kaa;
 		}
 		return null;
 	}
