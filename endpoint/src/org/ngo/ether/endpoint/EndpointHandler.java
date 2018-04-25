@@ -51,7 +51,7 @@ public class EndpointHandler extends IoHandlerAdapter {
         {
         	if (epack.getDestination() == port)
         	{
-        		session.write(PackType.KAA.toPack(port));
+        		session.write(PackType.KAA.toPack(port, Endpoint.BRIDGE_ID));
         	}
         }
         //application DATA, deliver to callback
@@ -77,6 +77,6 @@ public class EndpointHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(IoSession session) throws Exception {
     	//XHO? change the "Echo" to the real one, this should be known endpoint id
-    	session.write(PackType.REG.toPack(port));	
+    	session.write(PackType.REG.toPack(port, Endpoint.BRIDGE_ID));	
     }
 }

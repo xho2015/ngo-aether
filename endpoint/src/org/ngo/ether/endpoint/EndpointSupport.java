@@ -1,6 +1,8 @@
 package org.ngo.ether.endpoint;
 
 import java.net.SocketAddress;
+import java.nio.charset.Charset;
+
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -33,6 +35,8 @@ public class EndpointSupport {
 		}
 		this.name = name;
 		this.handler = handler;
+		LOGGER.info("Endpoint v1.1 initialized.");
+	       
 	}
 
 	public boolean connect(SocketAddress address, boolean useSsl) {
@@ -71,10 +75,12 @@ public class EndpointSupport {
 		}
 	}
 	
-	public void sendMessage(String message, int to) {
+	public void sendMessage(String message, int from, int to) {
 		EtherPack epack = new EtherPack();
 		
 		//lookup this endpoint's id
+		//2018-04-25 fix source empty issue
+		epack.setSource((short)from);
 		epack.setDestination((short)to);
 		epack.setType(PackType.DAT.value());
 		
@@ -83,7 +89,8 @@ public class EndpointSupport {
 		epack.setChecksum(digest);
 		
 		epack.setLength(message.length());
-		epack.setPayload(message.getBytes());
+		//fix charset issue.
+		epack.setPayload(message.getBytes(Charset.forName("utf-8")));
 		
         session.write(epack);
     }

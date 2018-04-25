@@ -14,8 +14,11 @@ public class Endpoint implements EndpointCallback {
 	private String endPointName;
 	
 	private int dest;
+	private int ID;
 	private int testData = 1;
     
+	public static final int BRIDGE_ID = 0;
+	
 	public void start()
 	{
 		SocketAddress address = parseSocketAddress("192.168.0.5:60001");
@@ -27,6 +30,7 @@ public class Endpoint implements EndpointCallback {
 		client = new EndpointSupport(endPointName, handler);
 	    
 		dest = Integer.valueOf(System.getProperty("ngo.endpoint.test.to","1"));
+		ID = Integer.valueOf(System.getProperty("ngo.endpoint.uniqueID","20"));
 		
         if (!client.connect( address, false)) {
         	System.out.println("failed to connect to bridge");
@@ -64,7 +68,7 @@ public class Endpoint implements EndpointCallback {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		client.sendMessage("<DAT>"+testData+"</DAT>", dest);
+		client.sendMessage("<DAT>"+testData+"</DAT>",ID, dest);
 	}
 
 	@Override
@@ -83,9 +87,8 @@ public class Endpoint implements EndpointCallback {
 			e.printStackTrace();
 		}
 		int msg = parsePort(message.replace("<DAT>", "").replace("</DAT>", ""))+1;
-		client.sendMessage("<DAT>"+msg +"</DAT>", dest);
-		
-		
+		client.sendMessage("<DAT>"+msg +"</DAT>", ID, dest);
+	
 	}
 
 	@Override
