@@ -25,6 +25,8 @@ public class Bridge {
 	
 	private final static Logger LOGGER = LoggerFactory.getLogger(Bridge.class);
 
+	public static final int BRIDGE_ID = 0;
+	
 	public static void main(String[] args) {
 		
 		NioSocketAcceptor acceptor = new NioSocketAcceptor();
@@ -57,7 +59,7 @@ public class Bridge {
         int worker = Integer.valueOf(System.getProperty("ngo.bridge.worker","6"));
         chain.addLast("executor1", new ExecutorFilter(worker));
 
-        IoHandler handler = new BridgeHandler();
+        IoHandler handler = new BridgeHandler(BRIDGE_ID);
         acceptor.setHandler(handler);
         
         //idle time in second
@@ -68,6 +70,8 @@ public class Bridge {
         String host = System.getProperty("ngo.bridge.host","127.0.0.1");
         try {
 			acceptor.bind(new InetSocketAddress(host,port));
+			LOGGER.info(String.format("[NGO aether bridge v1.1] launched, port=%s, host=%s", port, host));
+			
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());
 		}    

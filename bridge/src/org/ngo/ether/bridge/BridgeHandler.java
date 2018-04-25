@@ -20,9 +20,14 @@ public class BridgeHandler extends IoHandlerAdapter {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(BridgeHandler.class);
 
+	private int bridgeId;
 	
 	private static final Map<Short, SessionGroup<IoSession>> DNS = new ConcurrentHashMap<Short, SessionGroup<IoSession>>();
 	
+	public BridgeHandler(int id) {
+		this.bridgeId = id;
+	}
+
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		LOGGER.debug(String.format("new session opened, address=%s", session.getRemoteAddress()));	
@@ -46,7 +51,7 @@ public class BridgeHandler extends IoHandlerAdapter {
 		
 		if (state == 0)
 		{
-			session.write(PackType.KA.toPack(port));
+			session.write(PackType.KA.toPack(bridgeId,port));
 			session.setAttribute(Constants.ATTR_KA_STATE, 1);
 		}
 		else if (state == 1)
@@ -76,14 +81,14 @@ public class BridgeHandler extends IoHandlerAdapter {
 
 		if (type == PackType.REG)
 		{
-			short port = epack.getDestination();
+			short srcPort = epack.getSource();
 			synchronized(DNS)
 			{
-				SessionGroup<IoSession> connections = DNS.get(port);
+				SessionGroup<IoSession> connections = DNS.get(srcPort);
 				if (connections == null)
 				{
 					connections = new SessionGroup<IoSession>();
-					DNS.put(port, connections);
+					DNS.put(srcPort, connections);
 				}
 				
 				IoSession stale = null;
@@ -98,11 +103,11 @@ public class BridgeHandler extends IoHandlerAdapter {
 				
 				//appended to the end of the list
 				connections.add(session);
-				session.setAttribute(Constants.ATTR_PORT, port);
-				LOGGER.debug(String.format("new session registered, port=%s, address=%s", port, session.getRemoteAddress()));
+				session.setAttribute(Constants.ATTR_PORT, srcPort);
+				LOGGER.debug(String.format("new session registered, port=%s, address=%s", srcPort, session.getRemoteAddress()));
 				
 				//send out a REGA immediately
-				session.write(PackType.REGA.toPack(port));
+				session.write(PackType.REGA.toPack(bridgeId,srcPort));
 			}		
 		}
 		else if (type == PackType.KAA)
