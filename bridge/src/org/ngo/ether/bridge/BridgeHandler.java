@@ -41,6 +41,7 @@ public class BridgeHandler extends IoHandlerAdapter {
 		{
 			SessionGroup<IoSession> connections = DNS.get(port);
 			connections.remove(session);
+			LOGGER.info(String.format("endpoint closed, port=%d, address=%s", port, session.getRemoteAddress()));				
 		}
 	}
 
@@ -118,14 +119,14 @@ public class BridgeHandler extends IoHandlerAdapter {
 		else if (type == PackType.DAT)
 		{
 			//do data forwarding
-			short port = epack.getDestination();
+			short destPort = epack.getDestination();
 			//XHO? really need to do synchronize here? 
 			synchronized (DNS) {
-				SessionGroup<IoSession> connections = DNS.get(port);
+				SessionGroup<IoSession> connections = DNS.get(destPort);
 				if (connections != null)
 		            for (IoSession s : connections) {
 		                if (s.isConnected()) {
-		                	LOGGER.debug(String.format(">>>, port=%s, address=%s", port, s.getRemoteAddress()));
+		                	LOGGER.debug(String.format("forward package src=%d, dest=%d, dest.address=%s",epack.getSource(), destPort, s.getRemoteAddress()));
 		                    s.write(epack);
 		                }
 		            }

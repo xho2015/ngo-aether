@@ -70,7 +70,7 @@ public class Bridge {
         String host = System.getProperty("ngo.bridge.host","127.0.0.1");
         try {
 			acceptor.bind(new InetSocketAddress(host,port));
-			LOGGER.info(String.format("[NGO aether bridge v1.1] launched, port=%s, host=%s", port, host));
+			LOGGER.info(String.format("[aether bridge v1.1] launched, port=%s, host=%s", port, host));
 			
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());
